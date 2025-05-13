@@ -17,6 +17,7 @@ const addTodo = () =>{
 onChange={(e) => setInputTodo(e.target.value)
 }/>
 <button onClick={addTodo}>ADD TODO</button>
+<button>DELETE ALL</button>
 
 {
 todos.map((todos, index) => {
