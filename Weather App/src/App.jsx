@@ -3,12 +3,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 function App() {
   const apiKey = `67c7a7f8dc23aea744624e4d5f7f0cf2`;
-  const [cityName, setCityName] = useState("Karachi");
+  const [cityName, setCityName] = useState("lahore");
   const [apiData, setApiData] = useState(null);
+const [userLocation, setUserLocation] = useState("")
 
-  useEffect(() => {
-    // getData();
-  }, []);
+ useEffect(() => {
+    getUserLocation()
+    getData()
+ }, [])
 
   const getData = async () => {
     try {
@@ -22,12 +24,56 @@ function App() {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+   };
+
+  const getUserLocation = () => {
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, error);
+    }
+
+    function success(position) {
+      console.log("success", position)
+      // fetchDataByLocation(position)
+      setUserLocation(position)
+    }
+
+    function error() {
+      console.log("error",)
+      getData()
+
+    }
+
+
+
+  }
+
+
+  useEffect(() => {
+    if (userLocation) {
+      getByLocationWeather()
+    }
+  }, [userLocation])
+
+  const getByLocationWeather = async () => {
+    try {
+      const {latitude, longitude} = userLocation.coords
+      console.log("Fetching data...");
+      const response = await axios.get(
+        ` https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`
+      );
+      console.log("Data fetched successfully:", response.data);
+      setApiData(response.data);
+      console.log("city name", cityName);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(":event", event);
-    // getData()
+    getData()
   };
 
   return (
